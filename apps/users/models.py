@@ -1,5 +1,7 @@
-from django.db import models
+from datetime import datetime
+
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 # Create your models here.
@@ -23,3 +25,30 @@ class UserProfile(AbstractUser):
     # 获取用户未读消息的数量
     # from operation.models import UserMessage
     # return UserMessage.objects.filter(user=self.id, has_read=False).count()
+
+
+class EmailVerifyRecord(models.Model):
+    code = models.CharField(max_length=20, verbose_name="验证码")
+    email = models.EmailField(max_length=50, verbose_name="邮箱")
+    send_type = models.CharField(verbose_name="验证码类型",
+                                 choices=(("register", "注册"), ("forget", "找回密码"), ("update_email", "修改邮箱")),
+                                 max_length=30)
+    send_time = models.DateTimeField(verbose_name="发送时间", default=datetime.now)
+
+    class Meta:
+        db_table = 'tbl_email_verify'
+        verbose_name = "邮箱验证码"
+        verbose_name_plural = verbose_name
+
+
+class Banner(models.Model):
+    title = models.CharField(max_length=100, verbose_name="标题")
+    image = models.ImageField(upload_to="banner/%Y/%m", verbose_name="轮播图", max_length=100)
+    url = models.URLField(max_length=200, verbose_name="访问地址")
+    index = models.IntegerField(default=100, verbose_name="顺序")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+
+    class Meta:
+        db_table = 'tbl_banner'
+        verbose_name = "轮播图"
+        verbose_name_plural = verbose_name
